@@ -15,5 +15,6 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 14.x
-    - run: yarn build --if-present
+    - run: yarn install
+    - run: yarn build
     - run: yarn pack
