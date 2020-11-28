@@ -1,13 +1,19 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, screen } from 'electron'
+import * as log from 'electron-log'
 import * as path from 'path'
+
+import { EVENTS, PAGES } from './shared'
 import isDev = require('electron-is-dev')
 
-const debug = require('debug')('bread-translator:host')
+require('electron-debug')({
+  isEnabled: isDev
+})
 
 if (isDev) {
-  debug('dev mode')
+  log.debug('dev mode')
+  log.levels.add('debug')
 } else {
-  debug('production mode')
+  log.debug('production mode')
 }
 
 if (isDev) {
@@ -18,20 +24,37 @@ if (isDev) {
 
 let mainWindow: BrowserWindow = null
 
-async function createWindow () {
+async function createMainWindow () {
   mainWindow = new BrowserWindow({
     width: 800,
-    height: 600
+    height: 600,
+    autoHideMenuBar: true,
+    webPreferences: {
+      nodeIntegration: true
+    }
   })
 
   await mainWindow.loadURL(`file://${path.join(__dirname, 'index.html')}`)
+  mainWindow.on('ready-to-show', () => {
+    mainWindow.show()
+  })
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.webContents.send(EVENTS.LOAD_PAGE, PAGES.MAIN)
+
+    const displays = screen.getAllDisplays()
+    mainWindow.webContents.send(EVENTS.GET_ALL_DISPLAYS, displays)
+  })
+  mainWindow.on('close', () => {
+    mainWindow = null
+  })
+
+  app.on('activate', () => {
+    // fixes for macOS
+    if (mainWindow == null) {
+      createMainWindow().then()
+    }
+  })
 }
 
-app.on('activate', () => {
-  // fixes for macOS
-  if (mainWindow == null) {
-    createWindow().then()
-  }
-})
-
-app.whenReady().then(createWindow)
+app.whenReady().then(createMainWindow)

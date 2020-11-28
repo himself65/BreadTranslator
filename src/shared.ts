@@ -1,4 +1,13 @@
-export const CONSTANTS = {
-  NAME: '面包翻译器'
+const EVENTS = {
+  GET_ALL_DISPLAYS: 'get-all-displays',
+  LOAD_PAGE: 'load-page'
 }
-export default CONSTANTS
+
+const PAGES = {
+  MAIN: 'home'
+}
+
+export {
+  EVENTS,
+  PAGES
+}
