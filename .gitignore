@@ -59,6 +59,9 @@ typings/
 .rts2_cache_es/
 .rts2_cache_umd/
 
+# Parcel cache
+.parcel-cache
+
 # Optional REPL history
 .node_repl_history
 
@@ -81,6 +84,9 @@ typings/
 # Nuxt.js build / generate output
 .nuxt
 dist
+
+# Electron make / generate output
+out
 
 # Gatsby files
 .cache/
