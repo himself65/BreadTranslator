@@ -1,8 +1,6 @@
-'use strict'
-
 import { app, BrowserWindow } from 'electron'
-import isDev = require('electron-is-dev')
 import * as path from 'path'
+import isDev = require('electron-is-dev')
 
 const debug = require('debug')('bread-translator:host')
 

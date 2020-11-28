@@ -41,7 +41,8 @@ module.exports = {
     'prefer-const': 'error',
     'sort-imports': 'off',
     'import/order': 'off',
-    'simple-import-sort/sort': 'error',
+    'simple-import-sort/imports': 'error',
+    'simple-import-sort/exports': 'error',
     'no-unused-vars': 'off',
     'no-unused-expressions': 'warn',
     'react/jsx-filename-extension': [
