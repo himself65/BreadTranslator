@@ -1,4 +1,4 @@
-import { app, BrowserWindow, screen } from 'electron'
+import { app, BrowserWindow, ipcMain, screen } from 'electron'
 import * as log from 'electron-log'
 import * as path from 'path'
 
@@ -41,10 +41,8 @@ async function createMainWindow () {
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.webContents.send(EVENTS.LOAD_PAGE, PAGES.MAIN)
-
-    const displays = screen.getAllDisplays()
-    mainWindow.webContents.send(EVENTS.GET_ALL_DISPLAYS, displays)
   })
+
   mainWindow.on('close', () => {
     mainWindow = null
   })
@@ -56,5 +54,9 @@ async function createMainWindow () {
     }
   })
 }
+
+ipcMain.handle(EVENTS.GET_ALL_DISPLAYS, () => {
+  return screen.getAllDisplays()
+})
 
 app.whenReady().then(createMainWindow)
