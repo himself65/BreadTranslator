@@ -3,11 +3,13 @@ import * as log from 'electron-log'
 import * as path from 'path'
 
 import { EVENTS, PAGES } from './shared'
+import { createCaptureWindow, initBrowserWindow } from './util'
 import isDev = require('electron-is-dev')
 
-require('electron-debug')({
-  isEnabled: isDev
-})
+// fixme(bug): disable this for this will impact the transparent BrowserWindow
+// require('electron-debug')({
+//   isEnabled: isDev
+// })
 
 if (isDev) {
   log.debug('dev mode')
@@ -33,18 +35,13 @@ async function createMainWindow () {
       nodeIntegration: true
     }
   })
+  initBrowserWindow(mainWindow)
 
   await mainWindow.loadURL(`file://${path.join(__dirname, 'index.html')}`)
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
-  })
-
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.webContents.send(EVENTS.LOAD_PAGE, PAGES.MAIN)
-  })
+  mainWindow.webContents.send(EVENTS.LOAD_PAGE, PAGES.MAIN)
 
   mainWindow.on('close', () => {
-    mainWindow = null
+    ipcMain.emit(EVENTS.CLOSE_APP)
   })
 
   app.on('activate', () => {
@@ -58,5 +55,9 @@ async function createMainWindow () {
 ipcMain.handle(EVENTS.GET_ALL_DISPLAYS, () => {
   return screen.getAllDisplays()
 })
+
+// fixme(performance): this call may will stuck the main process
+//  issues: https://zhuanlan.zhihu.com/p/37050595
+ipcMain.handle(EVENTS.CREATE_CAPTURE_WINDOW, createCaptureWindow)
 
 app.whenReady().then(createMainWindow)
