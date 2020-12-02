@@ -8,7 +8,6 @@ export const proxyOriginal = {} as never
 
 export type GlobalProxy = {
   createCaptureWindow (): void
-  openDefaultPage (history: History): void
 }
 
 export const globalProxy = new Proxy<GlobalProxy>(proxyOriginal as never, {

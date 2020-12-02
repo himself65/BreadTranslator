@@ -1,4 +1,4 @@
-import { CssBaseline } from '@material-ui/core'
+import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core'
 import { observer, useLocalObservable } from 'mobx-react'
 import React, { Fragment, useEffect } from 'react'
 import { BrowserRouter, Route, Switch, useHistory } from 'react-router-dom'
@@ -8,8 +8,7 @@ import { BrowserRouter, Route, Switch, useHistory } from 'react-router-dom'
 import Capture from './page/Capture'
 import Home from './page/Home'
 import Loading from './page/Loading'
-import { createStore, globalContext } from './store'
-import { globalProxy } from './util'
+import { createStore, globalContext, outerStore } from './store'
 
 const GlobalStore: React.FC = ({ children }) => {
   const globalStore = useLocalObservable(createStore)
@@ -26,8 +25,8 @@ const GlobalStore: React.FC = ({ children }) => {
 const RouteSwitcher: React.FC = observer(({ children }) => {
   const history = useHistory()
   useEffect(() => {
-    globalProxy.openDefaultPage(history)
-  }, [])
+    history.push(outerStore.openPath)
+  }, [outerStore.openPath])
   return (
     <Fragment>
       {children}
@@ -50,25 +49,30 @@ const pages = [
   }
 ]
 
+// todo(feature): load theme from the main thread
+const theme = createMuiTheme({})
+
 export const Global: React.FC = () => {
   return (
     <BrowserRouter>
-      <CssBaseline/>
-      <GlobalStore>
-        <RouteSwitcher>
-          <Switch>
-            {
-              pages.map(page => {
-                return (
-                  <Route path={page.path} key={page.path} exact={page.path === '/'}>
-                    <page.Component/>
-                  </Route>
-                )
-              })
-            }
-          </Switch>
-        </RouteSwitcher>
-      </GlobalStore>
+      <ThemeProvider theme={theme}>
+        <CssBaseline/>
+        <GlobalStore>
+          <RouteSwitcher>
+            <Switch>
+              {
+                pages.map(page => {
+                  return (
+                    <Route path={page.path} key={page.path} exact={page.path === '/'}>
+                      <page.Component/>
+                    </Route>
+                  )
+                })
+              }
+            </Switch>
+          </RouteSwitcher>
+        </GlobalStore>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }

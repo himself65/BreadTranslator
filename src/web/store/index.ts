@@ -1,26 +1,35 @@
 import log from 'electron-log'
+import { makeObservable, observable } from 'mobx'
 import React from 'react'
 
-import { Display, Optional } from '../../../types'
+import { Display } from '../../../types'
 
-type PureStore = {
+// store for outer use, for example electron
+class OuterStore {
+  isDarkMode: boolean
   displays: Display[]
+  openPath: string
+
+  constructor () {
+    this.isDarkMode = false
+    this.displays = []
+    this.openPath = '/'
+
+    makeObservable(this, {
+      isDarkMode: observable,
+      displays: observable,
+      openPath: observable
+    })
+  }
 }
+
+export const outerStore = new OuterStore()
 
 export const globalContext = React.createContext<ReturnType<typeof createStore>>(null)
 
-// fixme(type): remove 'as'
-export const defaultStore: Optional<PureStore> = {}
-
+// store for React use
 export const createStore = () => ({
-  displays: [] as Display[],
-  ...defaultStore,
-  getDisplays (): Display[] {
-    return [...this.displays]
-  },
-  setDisplays (displays): void {
-    this.displays = displays
-  }
+  // nothing for now
 })
 
 export function useGlobalStore (): ReturnType<typeof createStore> {
