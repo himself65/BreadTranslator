@@ -3,45 +3,45 @@
   "version": "0.0.1",
   "private": true,
   "repository": "https://github.com/Himself65/BreadTranslator.git",
+  "license": "SEE LICENSE IN ./LICENSE",
   "author": "himself65 <himself65@outlook.com>",
-  "engines": {
-    "node": ">= 14"
-  },
   "main": "dist/main.js",
   "browser": "dist/index.html",
-  "build": {
-    "appId": "com.himself65.bread-translator",
-    "extends": null,
-    "directories": {
-      "output": "out"
-    },
-    "files": [
-      "dist/**/*"
-    ]
-  },
   "scripts": {
-    "clean": "rimraf dist",
-    "pack": "electron-builder build",
-    "start": "electron dist/main.js",
-    "lint": "yarn lint:eslint",
-    "lint:fix": "yarn lint:eslint --fix",
-    "lint:eslint": "eslint --ext .jsx,.js,.ts,.tsx src",
     "build": "concurrently \"yarn build:web\" \"yarn build:app\"",
-    "build:web": "parcel build public/index.html --target electron --public-url ./",
     "build:app": "parcel build src/main.ts --target electron",
-    "watch:web": "parcel watch public/index.html --target electron --public-url ./ --no-hmr",
-    "watch:app": "parcel watch src/main.ts --target electron"
+    "build:web": "parcel build public/index.html --target electron --public-url ./",
+    "clean": "rimraf dist",
+    "lint": "yarn lint:eslint",
+    "lint:eslint": "eslint --ext .jsx,.js,.ts,.tsx src",
+    "lint:fix": "yarn lint:eslint --fix",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "start": "electron dist/main.js",
+    "watch:app": "parcel watch src/main.ts --target electron",
+    "watch:web": "parcel watch public/index.html --target electron --public-url ./ --no-hmr"
   },
-  "license": "SEE LICENSE IN ./LICENSE",
   "browserslist": [
     "last 1 Chrome version"
   ],
-  "devDependencies": {
-    "@loadable/component": "^5.14.1",
+  "dependencies": {
+    "@material-ui/core": "^4.11.1",
+    "@material-ui/icons": "^4.9.1",
     "@material-ui/styles": "^4.11.1",
+    "electron-debug": "^3.1.0",
+    "electron-is-dev": "^1.2.0",
+    "electron-log": "^4.3.0",
+    "electron-reload": "^1.5.0",
+    "electron-reloader": "^1.0.1",
+    "mobx": "^6.0.4",
+    "mobx-react": "^7.0.5",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0"
+  },
+  "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/electron": "^1.6.10",
-    "@types/loadable__component": "^5.13.1",
     "@types/node": "^14.14.10",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
@@ -52,9 +52,6 @@
     "cross-env": "^7.0.2",
     "electron": "^11.0.3",
     "electron-builder": "^22.9.1",
-    "electron-is-dev": "^1.2.0",
-    "electron-reload": "^1.5.0",
-    "electron-reloader": "^1.0.1",
     "eslint": "^7.14.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-graphql": "^4.0.0",
@@ -65,23 +62,23 @@
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-simple-import-sort": "^6.0.1",
-    "graphql": "^15.4.0",
     "less": "^3.12.2",
-    "mobx": "^6.0.4",
-    "mobx-react": "^7.0.5",
     "parcel-bundler": "^1.12.4",
-    "react-router-dom": "^5.2.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.1.2",
-    "wait-on": "^5.2.0",
-    "webpack": "^5.8.0"
+    "wait-on": "^5.2.0"
   },
-  "dependencies": {
-    "@material-ui/core": "^4.11.1",
-    "@material-ui/icons": "^4.9.1",
-    "electron-debug": "^3.1.0",
-    "electron-log": "^4.3.0",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+  "engines": {
+    "node": ">= 14"
+  },
+  "build": {
+    "appId": "com.himself65.bread-translator",
+    "extends": null,
+    "directories": {
+      "output": "out"
+    },
+    "files": [
+      "dist/**/*"
+    ]
   }
 }
