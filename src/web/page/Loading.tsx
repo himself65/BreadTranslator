@@ -1,7 +1,7 @@
 import React from 'react'
 
 // todo(unfinished)
-const LoadingPage: React.FC = () => {
+const Loading: React.FC = () => {
   return (
     <div>
       Loading...
@@ -9,4 +9,4 @@ const LoadingPage: React.FC = () => {
   )
 }
 
-export default LoadingPage
+export default Loading
