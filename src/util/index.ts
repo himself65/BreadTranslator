@@ -22,7 +22,6 @@ function getCurrentScreen (browserWindow: BrowserWindow): Display {
   const bounds = browserWindow.getBounds()
   return screen.getAllDisplays().find(display => {
     const displayBounds = display.bounds
-    // left top point in this screen
     const borderX = displayBounds.x + displayBounds.width
     const borderY = displayBounds.y + displayBounds.height
     const leftTop = (bounds.x < borderX) && (bounds.y < borderY)
@@ -41,7 +40,6 @@ export const captureBrowserWindow = (): void => {
   }
 
   desktopCapturer.getSources({ types: ['screen'] }).then(async sources => {
-    // target screen
     const source = sources.find(source => source.display_id === `${currentScreen.id}`)
     // todo(unfinished)
   })
