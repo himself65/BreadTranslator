@@ -1,4 +1,5 @@
 const EVENTS = {
+  CAPTURE_WINDOW: 'capture-window',
   CHANGE_THEME: 'change-theme',
   CLOSE_APP: 'close-app',
   CREATE_CAPTURE_WINDOW: 'create-capture-window',

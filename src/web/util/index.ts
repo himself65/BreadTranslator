@@ -1,13 +1,13 @@
 import { ClassNameMap } from '@material-ui/styles'
 import { DefaultTheme } from '@material-ui/styles/defaultTheme'
 import log from 'electron-log'
-import type { History } from 'history'
 
 // proxyOriginal should be initialized by `init()` function at the beginning.
 export const proxyOriginal = {} as never
 
 export type GlobalProxy = {
   createCaptureWindow (): void
+  captureWindow (): void
 }
 
 export const globalProxy = new Proxy<GlobalProxy>(proxyOriginal as never, {

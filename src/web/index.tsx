@@ -7,6 +7,6 @@ import { Global } from './Global'
 import { init } from './init/electron'
 import { proxyOriginal } from './util'
 
-init(proxyOriginal).then(() => {
-  ReactDOM.render(<Global/>, document.getElementById('root'))
-})
+init(proxyOriginal).then(() => console.log('initialized'))
+
+ReactDOM.render(<Global/>, document.getElementById('root'))

@@ -3,7 +3,11 @@ import * as log from 'electron-log'
 import * as path from 'path'
 
 import { EVENTS, PAGES } from './shared'
-import { createCaptureWindow, initBrowserWindow } from './util'
+import {
+  captureBrowserWindow,
+  createCaptureWindow,
+  initBrowserWindow
+} from './util'
 import isDev = require('electron-is-dev')
 
 // fixme(bug): disable this for this will impact the transparent BrowserWindow
@@ -59,5 +63,6 @@ ipcMain.handle(EVENTS.GET_ALL_DISPLAYS, () => {
 // fixme(performance): this call may will stuck the main process
 //  issues: https://zhuanlan.zhihu.com/p/37050595
 ipcMain.handle(EVENTS.CREATE_CAPTURE_WINDOW, createCaptureWindow)
+ipcMain.handle(EVENTS.CAPTURE_WINDOW, captureBrowserWindow)
 
 app.whenReady().then(createMainWindow)

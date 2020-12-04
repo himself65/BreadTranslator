@@ -26,6 +26,10 @@ const initProxy = async (proxyOriginal: GlobalProxy) => {
     ipcRenderer.invoke(EVENTS.CREATE_CAPTURE_WINDOW)
   }
 
+  proxyOriginal.captureWindow = function () {
+    ipcRenderer.invoke(EVENTS.CAPTURE_WINDOW)
+  }
+
   ipcRenderer.once(EVENTS.LOAD_PAGE, (event, path: string) => {
     log.log(`EVENTS.LOAD_PAGE get '${path}'`)
     outerStore.openPath = path

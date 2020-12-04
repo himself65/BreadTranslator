@@ -1,7 +1,10 @@
-import { BrowserWindow, nativeTheme } from 'electron'
+import { BrowserWindow, desktopCapturer, Display, nativeTheme, screen } from 'electron'
+import log from 'electron-log'
 import * as path from 'path'
 
 import { EVENTS, PAGES } from '../shared'
+
+let captureWindow: BrowserWindow = null
 
 export function initBrowserWindow (browserWindow: BrowserWindow): void {
   browserWindow.on('ready-to-show', () => {
@@ -15,8 +18,40 @@ export function initBrowserWindow (browserWindow: BrowserWindow): void {
   })
 }
 
+function getCurrentScreen (browserWindow: BrowserWindow): Display {
+  const bounds = browserWindow.getBounds()
+  return screen.getAllDisplays().find(display => {
+    const displayBounds = display.bounds
+    // left top point in this screen
+    const borderX = displayBounds.x + displayBounds.width
+    const borderY = displayBounds.y + displayBounds.height
+    const leftTop = (bounds.x < borderX) && (bounds.y < borderY)
+    const rightBottom = (bounds.x + bounds.width < borderX) && (bounds.y + bounds.height < borderY)
+    return leftTop && rightBottom
+  })
+}
+
+export const captureBrowserWindow = (): void => {
+  if (captureWindow === null) {
+    return
+  }
+  const currentScreen = getCurrentScreen(captureWindow)
+  if (currentScreen == null) {
+    log.log('cannot find the screen')
+  }
+
+  desktopCapturer.getSources({ types: ['screen'] }).then(async sources => {
+    // target screen
+    const source = sources.find(source => source.display_id === `${currentScreen.id}`)
+    // todo(unfinished)
+  })
+}
+
 export const createCaptureWindow = (): void => {
-  const captureWindow = new BrowserWindow({
+  if (captureWindow !== null) {
+    return
+  }
+  captureWindow = new BrowserWindow({
     resizable: true,
     movable: true,
     frame: false,
