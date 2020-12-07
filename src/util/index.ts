@@ -1,4 +1,11 @@
-import { BrowserWindow, desktopCapturer, Display, nativeTheme, screen } from 'electron'
+import {
+  BrowserWindow,
+  desktopCapturer,
+  Display,
+  nativeTheme,
+  Rectangle,
+  screen
+} from 'electron'
 import log from 'electron-log'
 import * as path from 'path'
 
@@ -25,23 +32,46 @@ function getCurrentScreen (browserWindow: BrowserWindow): Display {
     const borderX = displayBounds.x + displayBounds.width
     const borderY = displayBounds.y + displayBounds.height
     const leftTop = (bounds.x < borderX) && (bounds.y < borderY)
-    const rightBottom = (bounds.x + bounds.width < borderX) && (bounds.y + bounds.height < borderY)
+    const rightBottom = (bounds.x + bounds.width < borderX) &&
+      (bounds.y + bounds.height < borderY)
     return leftTop && rightBottom
   })
 }
 
-export const captureBrowserWindow = (): void => {
+export const captureBrowserWindow = (): Promise<string> => {
   if (captureWindow === null) {
     return
   }
   const currentScreen = getCurrentScreen(captureWindow)
-  if (currentScreen == null) {
+  if (currentScreen === null) {
     log.log('cannot find the screen')
   }
 
-  desktopCapturer.getSources({ types: ['screen'] }).then(async sources => {
-    const source = sources.find(source => source.display_id === `${currentScreen.id}`)
-    // todo(unfinished)
+  function getBounds (windowBounds: Rectangle, displayBounds: Rectangle): Rectangle {
+    return {
+      // calculate the position
+      x: windowBounds.x - displayBounds.x,
+      y: windowBounds.y - displayBounds.y,
+      height: windowBounds.height,
+      width: windowBounds.width
+    }
+  }
+
+  const targetBounds = getBounds(captureWindow.getBounds(), currentScreen.bounds)
+  log.log('get sources')
+  captureWindow.hide()
+  return desktopCapturer.getSources({
+    types: ['screen'],
+    thumbnailSize: {
+      width: currentScreen.bounds.width,
+      height: currentScreen.bounds.height
+    }
+  }).then(async sources => {
+    captureWindow.show()
+    const source = sources.find(
+      source => source.display_id === `${currentScreen.id}`)
+    log.log('source found')
+    return source.thumbnail.crop(targetBounds).toDataURL()
   })
 }
 

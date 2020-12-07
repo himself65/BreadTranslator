@@ -27,7 +27,11 @@ const initProxy = async (proxyOriginal: GlobalProxy) => {
   }
 
   proxyOriginal.captureWindow = function () {
-    ipcRenderer.invoke(EVENTS.CAPTURE_WINDOW)
+    ipcRenderer.invoke(EVENTS.CAPTURE_WINDOW).then(async (dataURLPromise: Promise<string>) => {
+      const dataURL = await dataURLPromise
+      log.log('get dataURL')
+      outerStore.imageURL = dataURL
+    })
   }
 
   ipcRenderer.once(EVENTS.LOAD_PAGE, (event, path: string) => {
