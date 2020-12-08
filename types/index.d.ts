@@ -2,6 +2,11 @@ export type Display = {
   id: number
 }
 
+export type OCRData = {
+  text: string
+  dataURL: string
+}
+
 export type Maybe<T> = null | undefined | T;
 
 export type NotMaybe<T> = T

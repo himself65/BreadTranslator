@@ -108,3 +108,6 @@ out
 
 # TernJS port file
 .tern-port
+
+# Trained data
+*.traineddata

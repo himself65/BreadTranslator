@@ -5,9 +5,10 @@ import * as path from 'path'
 import { EVENTS, PAGES } from './shared'
 import {
   captureBrowserWindow,
-  createCaptureWindow,
   initBrowserWindow
 } from './util'
+import { entryHtml } from './util/shared'
+import { captureWindow, createCaptureWindow } from './view/Capture'
 import isDev = require('electron-is-dev')
 
 // fixme(bug): disable this for this will impact the transparent BrowserWindow
@@ -41,7 +42,7 @@ async function createMainWindow () {
   })
   initBrowserWindow(mainWindow)
 
-  await mainWindow.loadURL(`file://${path.join(__dirname, 'index.html')}`)
+  await mainWindow.loadURL(entryHtml)
   mainWindow.webContents.send(EVENTS.LOAD_PAGE, PAGES.MAIN)
 
   mainWindow.on('close', () => {
@@ -62,7 +63,10 @@ ipcMain.handle(EVENTS.GET_ALL_DISPLAYS, () => {
 
 // fixme(performance): this call may will stuck the main process
 //  issues: https://zhuanlan.zhihu.com/p/37050595
+
 ipcMain.handle(EVENTS.CREATE_CAPTURE_WINDOW, createCaptureWindow)
-ipcMain.handle(EVENTS.CAPTURE_WINDOW, captureBrowserWindow)
+ipcMain.handle(EVENTS.OCR_CAPTURE_WINDOW, () => {
+  captureBrowserWindow(captureWindow).then()
+})
 
 app.whenReady().then(createMainWindow)

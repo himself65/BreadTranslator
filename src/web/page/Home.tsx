@@ -1,4 +1,4 @@
-import { Button, Paper } from '@material-ui/core'
+import { Button, Paper, Typography } from '@material-ui/core'
 import { observer } from 'mobx-react'
 import React, { useCallback } from 'react'
 
@@ -22,7 +22,10 @@ export const HomePage: React.FC = observer(() => {
       <Button onClick={captureWindow}>
         截图
       </Button>
-      <img src={outerStore.imageURL} alt=''/>
+      <Typography>
+        {outerStore.captureResult.text}
+      </Typography>
+      <img src={outerStore.captureResult.imageURL} alt='capture screen result image'/>
     </Paper>
   )
 })

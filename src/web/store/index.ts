@@ -9,20 +9,25 @@ class OuterStore {
   isDarkMode: boolean
   displays: Display[]
   openPath: string
-  // fixme: remove this, only for debug
-  imageURL: string
+  captureResult: {
+    imageURL: string
+    text: string
+  }
 
   constructor () {
     this.isDarkMode = false
     this.displays = []
     this.openPath = '/'
-    this.imageURL = ''
+    this.captureResult = {
+      imageURL: '',
+      text: 'No result'
+    }
 
     makeObservable(this, {
       isDarkMode: observable,
       displays: observable,
       openPath: observable,
-      imageURL: observable
+      captureResult: observable
     })
   }
 }

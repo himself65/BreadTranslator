@@ -2,16 +2,15 @@ import {
   BrowserWindow,
   desktopCapturer,
   Display,
+  NativeImage,
   nativeTheme,
   Rectangle,
   screen
 } from 'electron'
 import log from 'electron-log'
-import * as path from 'path'
 
-import { EVENTS, PAGES } from '../shared'
-
-let captureWindow: BrowserWindow = null
+import { EVENTS } from '../shared'
+import OCR from './ocr'
 
 export function initBrowserWindow (browserWindow: BrowserWindow): void {
   browserWindow.on('ready-to-show', () => {
@@ -38,10 +37,7 @@ function getCurrentScreen (browserWindow: BrowserWindow): Display {
   })
 }
 
-export const captureBrowserWindow = (): Promise<string> => {
-  if (captureWindow === null) {
-    return
-  }
+export const getCaptureBrowserWindowImage = async (captureWindow: BrowserWindow): Promise<NativeImage> => {
   const currentScreen = getCurrentScreen(captureWindow)
   if (currentScreen === null) {
     log.log('cannot find the screen')
@@ -71,31 +67,26 @@ export const captureBrowserWindow = (): Promise<string> => {
     const source = sources.find(
       source => source.display_id === `${currentScreen.id}`)
     log.log('source found')
-    return source.thumbnail.crop(targetBounds).toDataURL()
+    return source.thumbnail.crop(targetBounds)
   })
 }
 
-export const createCaptureWindow = (): void => {
-  if (captureWindow !== null) {
-    return
+const ocr = new OCR('google')
+export const getImageText = async (image: NativeImage | string): Promise<string> => {
+  let dataURL = ''
+  if (typeof image === 'string') {
+    dataURL = image
+  } else {
+    dataURL = image.toDataURL()
   }
-  captureWindow = new BrowserWindow({
-    resizable: true,
-    movable: true,
-    frame: false,
-    hasShadow: false,
-    transparent: true,
-    titleBarStyle: 'hidden',
-    webPreferences: {
-      nodeIntegration: true
+  return ocr.recognize(dataURL)
+}
+
+export const captureBrowserWindow = (captureWindow: BrowserWindow): Promise<{ text: string; dataURL: string }> => {
+  return getCaptureBrowserWindowImage(captureWindow).then(async image => {
+    return {
+      text: await getImageText(image),
+      dataURL: image.toDataURL()
     }
   })
-
-  // use async call, don't stuck the main thread
-  captureWindow.loadURL(`file://${path.join(__dirname, 'index.html')}`)
-    .then(() => {
-      captureWindow.webContents.send(EVENTS.LOAD_PAGE, PAGES.CAPTURE)
-    })
-
-  initBrowserWindow(captureWindow)
 }

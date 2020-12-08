@@ -1,7 +1,7 @@
 import type { Display } from 'electron'
 import log from 'electron-log'
 
-import type { Display as MyDisplay } from '../../../../types'
+import type { Display as MyDisplay, OCRData } from '../../../../types'
 import { EVENTS } from '../../../shared'
 import { outerStore } from '../../store'
 import { GlobalProxy } from '../../util'
@@ -27,10 +27,10 @@ const initProxy = async (proxyOriginal: GlobalProxy) => {
   }
 
   proxyOriginal.captureWindow = function () {
-    ipcRenderer.invoke(EVENTS.CAPTURE_WINDOW).then(async (dataURLPromise: Promise<string>) => {
-      const dataURL = await dataURLPromise
-      log.log('get dataURL')
-      outerStore.imageURL = dataURL
+    ipcRenderer.invoke(EVENTS.OCR_CAPTURE_WINDOW).then(async (dataPromise: Promise<OCRData>) => {
+      const { text, dataURL } = await dataPromise
+      outerStore.captureResult.text = text
+      outerStore.captureResult.imageURL = dataURL
     })
   }
 
