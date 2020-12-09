@@ -15,8 +15,6 @@ const useStyles = makeStyles({
   // overwrite the global css
   '@global': {
     'html, body, #app': {
-      width: '100%',
-      height: '100%',
       background: 'rgba(0, 0, 0, 0.2)'
     }
   }

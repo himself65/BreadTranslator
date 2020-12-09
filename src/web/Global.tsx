@@ -1,13 +1,30 @@
-import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core'
+import {
+  AppBar,
+  createMuiTheme,
+  CssBaseline, Tab,
+  Tabs,
+  ThemeProvider
+} from '@material-ui/core'
+import { Home as HomeIcon, Settings as SettingsIcon } from '@material-ui/icons'
+import { makeStyles } from '@material-ui/styles'
+import log from 'electron-log'
 import { observer, useLocalObservable } from 'mobx-react'
-import React, { Fragment, useEffect } from 'react'
-import { BrowserRouter, Route, Switch, useHistory } from 'react-router-dom'
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo
+} from 'react'
+import { useTranslation } from 'react-i18next'
+import {
+  BrowserRouter,
+  Route,
+  Switch,
+  useHistory,
+  useLocation
+} from 'react-router-dom'
 
-// bug(parcel): code split not work with parcel using TypeScript, might be fixed in parcel v2
-//  issues: https://github.com/parcel-bundler/parcel/issues/1547, https://github.com/parcel-bundler/website/issues/546
-import Capture from './page/Capture'
-import Home from './page/Home'
-import Loading from './page/Loading'
+import { hideBarPaths, pages } from './page'
 import { createStore, globalContext, outerStore } from './store'
 
 const GlobalStore: React.FC = ({ children }) => {
@@ -34,45 +51,83 @@ const RouteSwitcher: React.FC = observer(({ children }) => {
   )
 })
 
-const pages = [
-  {
-    path: '/',
-    Component: Home
-  },
-  {
-    path: '/capture',
-    Component: Capture
-  },
-  {
-    path: '/loading',
-    Component: Loading
+const useStyles = makeStyles({
+  appBar: {
+    top: 'auto',
+    bottom: 0
   }
-]
+})
 
-// todo(feature): load theme from the main thread
-const theme = createMuiTheme({})
+const GlobalBar: React.FC = observer(() => {
+  const classes = useStyles()
+  const { t } = useTranslation()
+  const history = useHistory()
+  const location = useLocation()
+  const handleTabsChange = useCallback(
+    (event: React.ChangeEvent<unknown>, newValue: string) => {
+      log.log('open page:', newValue)
+      history.push(newValue)
+    }, [history])
 
-export const Global: React.FC = () => {
+  const hidePage = useMemo(() =>
+    hideBarPaths.find(page => page === location.pathname) != null
+  , [])
+
+  if (hidePage) {
+    return null
+  }
+
   return (
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        <CssBaseline/>
-        <GlobalStore>
-          <RouteSwitcher>
-            <Switch>
-              {
-                pages.map(page => {
-                  return (
-                    <Route path={page.path} key={page.path} exact={page.path === '/'}>
-                      <page.Component/>
-                    </Route>
-                  )
-                })
-              }
-            </Switch>
-          </RouteSwitcher>
-        </GlobalStore>
-      </ThemeProvider>
-    </BrowserRouter>
+    <AppBar position='fixed' color='primary' className={classes.appBar}>
+      <Tabs centered defaultValue='/' onChange={handleTabsChange}>
+        <Tab
+          icon={<HomeIcon/>}
+          value='/'
+          label={t('home')}
+        />
+        <Tab
+          icon={<SettingsIcon/>}
+          value='/settings'
+          label={t('settings')}
+        />
+      </Tabs>
+    </AppBar>
   )
-}
+})
+
+export const Global: React.FC = observer(() => {
+  const theme = useMemo(() => createMuiTheme({
+    palette: {
+      type: outerStore.isDarkMode ? 'dark' : 'light'
+    }
+  }), [outerStore.isDarkMode])
+
+  return (
+    <React.StrictMode>
+      <BrowserRouter>
+        <ThemeProvider theme={theme}>
+          <CssBaseline/>
+          <GlobalStore>
+            <RouteSwitcher>
+              <Switch>
+                {
+                  pages.map(page => {
+                    return (
+                      <Route
+                        path={page.path} key={page.path}
+                        exact={page.path === '/'}
+                      >
+                        <page.Component/>
+                      </Route>
+                    )
+                  })
+                }
+              </Switch>
+            </RouteSwitcher>
+            <GlobalBar/>
+          </GlobalStore>
+        </ThemeProvider>
+      </BrowserRouter>
+    </React.StrictMode>
+  )
+})

@@ -7,6 +7,16 @@ export type OCRData = {
   dataURL: string
 }
 
+export type FeedbackOptions = {
+  title: string
+  subtitle?: string
+  body: string
+}
+
+export type FeedBackConfig = {
+  global?: boolean
+}
+
 export type Maybe<T> = null | undefined | T;
 
 export type NotMaybe<T> = T

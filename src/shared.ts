@@ -7,7 +7,8 @@ const EVENTS = {
   CREATE_CAPTURE_WINDOW: 'create-capture-window',
   GET_ALL_DISPLAYS: 'get-all-displays',
   LOAD_PAGE: 'load-page',
-  LOG_WORKER_STATUS: 'log-worker-status'
+  LOG_WORKER_STATUS: 'log-worker-status',
+  SHOW_FEEDBACK: 'show-feedback'
 } as const
 
 const PAGES = {

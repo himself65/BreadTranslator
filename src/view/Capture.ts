@@ -11,6 +11,8 @@ export const createCaptureWindow = (): void => {
     return
   }
   captureWindow = new BrowserWindow({
+    height: 248,
+    width: 768,
     resizable: true,
     movable: true,
     frame: false,
